@@ -1,6 +1,5 @@
 package com.example.simpletodo;
 
-import android.os.FileUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,12 +28,6 @@ public class MainActivity extends AppCompatActivity {
    ItemsAdapter itemsAdapter;
 
 
-
-
-
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,12 +37,12 @@ public class MainActivity extends AppCompatActivity {
         etItem = findViewById(R.id.etItem);
         rvItems = findViewById((R.id.rvItem));
 
+        loadItems();
 
-
-        items = new ArrayList<>();
-        items.add("Buy milk");
-        items.add("Go to Gym");
-        items.add("Have fun");
+       // items = new ArrayList<>()
+      //        items.add("Buy milk");
+      //        items.add("Go to Gym");
+      //        items.add("Have fun");
 
 
       ItemsAdapter.onLongClickListener onLongClickListener = new ItemsAdapter.onLongClickListener(){
@@ -57,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
               items.remove(position);
               itemsAdapter.notifyItemRemoved(position);
               Toast.makeText(getApplicationContext(),"Item was removed", Toast.LENGTH_SHORT).show();
+              saveItems();
 
           }
       };
@@ -72,30 +68,31 @@ public class MainActivity extends AppCompatActivity {
               itemsAdapter.notifyItemInserted(items.size()-1);
               etItem.setText("");
                Toast.makeText(getApplicationContext(),"Item was added", Toast.LENGTH_SHORT).show();
+               saveItems();
            }
        });
     }
 
     private File getDataFile(){
-        return new File (getFilesDir(), "data.txt");
+        return new File(getFilesDir(), "data.txt");
     }
 
-//    private void loadItems() {
-//        try {
-//            items = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
-//        } catch (IOException e) {
-//            Log.e("MainActivity", "Error reading items", e);
-//            items = new ArrayList<>();
-//        }
-//    }
-//
-//    private void saveItems() {
-//        try {
-//            FileUtils.writeLines(getDataFile(), items);
-//        } catch (IOException e) {
-//            Log.e("MainActivity", "Error writing items", e);
-//        }
-//    }
+    private void loadItems() {
+        try {
+            items = new ArrayList<>(FileUtils.readLines(getDataFile(), Charset.defaultCharset()));
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error reading items", e);
+            items = new ArrayList<>();
+        }
+    }
+
+    private void saveItems() {
+        try {
+            FileUtils.writeLines(getDataFile(), items);
+        } catch (IOException e) {
+            Log.e("MainActivity", "Error writing items", e);
+        }
+    }
 
 
 
